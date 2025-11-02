@@ -136,6 +136,67 @@ gcloud alpha services api-keys create \
 
 3. API Gatewayを再デプロイ
 
+## reCAPTCHA v3の設定
+
+Bot攻撃を防ぐため、reCAPTCHA v3を実装しています。
+
+### 設定済みの内容
+
+このプロジェクトには既にreCAPTCHA v3が実装されており、以下が設定されています：
+
+- **Site Key（公開鍵）**: `6LdjF_8rAAAAAB8GOKLPslNY6xVyPiqjdk6kY2sg`
+- **Secret Key**: Cloud Runの環境変数 `RECAPTCHA_SECRET_KEY` に設定済み
+- **検証閾値**: スコア0.5以上を人間と判定
+- **アクション**: `api_call`
+
+### reCAPTCHAの動作
+
+1. **フロントエンド（test.html）**
+   - ボタンクリック時に自動的にreCAPTCHAトークンを取得
+   - `x-recaptcha-token`ヘッダーでトークンを送信
+
+2. **バックエンド（Go）**
+   - `middleware/recaptcha.go`でトークンを検証
+   - Googleに問い合わせてスコアを取得
+   - スコア0.5未満または無効なトークン → 403 Forbidden
+   - トークンなし → 403 Forbidden
+
+3. **ブロック条件**
+   - reCAPTCHAトークンがない
+   - トークンが無効
+   - スコアが0.5未満（Bot判定）
+   - アクションが`api_call`でない
+
+### Botシミュレーションテスト
+
+test.htmlには、reCAPTCHA検証をテストするための機能があります：
+
+- **🚫 無効なトークンで送信** - わざと間違ったトークンを送信してブロックされることを確認
+- **⛔ トークンなしで送信** - トークンなしでブロックされることを確認
+
+### ログの確認
+
+reCAPTCHA検証のログを確認：
+
+```bash
+gcloud run services logs read api-server --region=asia-northeast1 --limit=50
+```
+
+ログには以下の情報が含まれます：
+- reCAPTCHAスコア
+- アクション名
+- 検証結果
+
+### 新しいreCAPTCHAキーを作成する場合
+
+1. [Google reCAPTCHA管理画面](https://www.google.com/recaptcha/admin)にアクセス
+2. 新しいサイトを登録（reCAPTCHA v3を選択）
+3. ドメインを追加（localhost、本番ドメインなど）
+4. Site KeyとSecret Keyを取得
+5. `test.html`のSite Keyを更新
+6. `deploy.sh`と`cloudbuild.yaml`のSecret Keyを更新
+7. 再デプロイ
+
 ## デプロイ後のテスト
 
 ### Cloud Runサービスのテスト

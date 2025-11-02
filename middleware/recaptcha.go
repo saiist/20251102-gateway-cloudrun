@@ -30,10 +30,11 @@ func RecaptchaVerify(next http.Handler) http.Handler {
 		// reCAPTCHAトークンの取得
 		token := r.Header.Get("x-recaptcha-token")
 
-		// トークンが空の場合はスキップ（開発環境など）
+		// トークンが空の場合はブロック
 		if token == "" {
-			log.Println("Warning: No reCAPTCHA token provided")
-			next.ServeHTTP(w, r)
+			log.Println("Error: No reCAPTCHA token provided - request blocked")
+			w.Header().Set("Content-Type", "application/json")
+			http.Error(w, `{"error":"reCAPTCHA token required"}`, http.StatusForbidden)
 			return
 		}
 
