@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Server Test</title>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdjF_8rAAAAAB8GOKLPslNY6xVyPiqjdk6kY2sg"></script>
     <style>
         * {
             margin: 0;
@@ -255,14 +256,26 @@
             const baseUrl = gatewayUrl.startsWith('http') ? gatewayUrl : `https://${gatewayUrl}`;
             const url = `${baseUrl}${endpoint}`;
 
+            responseDiv.innerHTML = `<span class="loading">⏳ reCAPTCHA検証中...</span>`;
+
+            // reCAPTCHAトークンの取得
+            let recaptchaToken;
+            try {
+                recaptchaToken = await grecaptcha.execute('6LdjF_8rAAAAAB8GOKLPslNY6xVyPiqjdk6kY2sg', {action: 'api_call'});
+            } catch (error) {
+                responseDiv.innerHTML = `<span class="error">❌ reCAPTCHAエラー: ${error.message}</span>`;
+                return;
+            }
+
             responseDiv.innerHTML = `<span class="loading">⏳ リクエスト中: ${endpoint}</span>`;
 
             const startTime = performance.now();
 
-            // ヘッダーの準備（APIキーを含む）
+            // ヘッダーの準備（APIキーとreCAPTCHAトークンを含む）
             const headers = {
                 'Accept': 'application/json',
                 'x-api-key': apiKey,
+                'x-recaptcha-token': recaptchaToken,
             };
 
             try {

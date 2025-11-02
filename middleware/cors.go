@@ -9,7 +9,7 @@ func CORS(next http.Handler) http.Handler {
 		// CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, x-api-key")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, x-api-key, x-recaptcha-token")
 		w.Header().Set("Access-Control-Max-Age", "86400")
 
 		// プリフライトリクエストの処理

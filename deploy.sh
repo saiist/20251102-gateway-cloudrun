@@ -45,7 +45,8 @@ gcloud run deploy ${SERVICE_NAME} \
     --max-instances 10 \
     --memory 512Mi \
     --cpu 1 \
-    --port 8080
+    --port 8080 \
+    --set-env-vars RECAPTCHA_SECRET_KEY=6LdjF_8rAAAAAP_GNaooFnMWdvpCkdyIcTtnNfv7
 
 # サービスURLの取得
 SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} \
