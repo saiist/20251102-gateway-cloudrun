@@ -172,12 +172,16 @@
         <div class="config-section">
             <h2>⚙️ 設定</h2>
             <div class="info-box">
-                <p><strong>手順:</strong> 下記コマンドでAPI Gateway URLを取得して設定してください</p>
-                <p><code>gcloud api-gateway gateways describe api-gateway --location asia-northeast1 --format 'value(defaultHostname)'</code></p>
+                <p><strong>🔒 リファラー制限付きAPIキー:</strong> このAPIキーはローカルホスト（file://、http://localhost:*、http://127.0.0.1:*）からのみ使用可能です</p>
+                <p><strong>💡 ヒント:</strong> デフォルト値が設定されているので、そのままボタンをクリックしてテストできます</p>
             </div>
             <div class="input-group">
                 <label for="gatewayUrl">API Gateway URL</label>
-                <input type="text" id="gatewayUrl" placeholder="例: api-gateway-xxxxx.gateway.dev">
+                <input type="text" id="gatewayUrl" value="api-gateway-dh1fxfxf.an.gateway.dev">
+            </div>
+            <div class="input-group">
+                <label for="apiKey">API Key (x-api-key)</label>
+                <input type="text" id="apiKey" value="AIzaSyCY8MMc5c30fF8Ax5suM1rfkeAA5iw8Ijg">
             </div>
         </div>
 
@@ -206,25 +210,44 @@
     </div>
 
     <script>
-        // LocalStorageからURLを復元
+        // デフォルト値
+        const DEFAULT_GATEWAY_URL = 'api-gateway-dh1fxfxf.an.gateway.dev';
+        const DEFAULT_API_KEY = 'AIzaSyCY8MMc5c30fF8Ax5suM1rfkeAA5iw8Ijg';
+
+        // LocalStorageからURLとAPIキーを復元（なければデフォルト値を使用）
         window.addEventListener('DOMContentLoaded', () => {
             const savedUrl = localStorage.getItem('gatewayUrl');
+            const savedApiKey = localStorage.getItem('apiKey');
+
             if (savedUrl) {
                 document.getElementById('gatewayUrl').value = savedUrl;
             }
+            if (savedApiKey) {
+                document.getElementById('apiKey').value = savedApiKey;
+            }
         });
 
-        // URLを保存
+        // URLとAPIキーを保存
         document.getElementById('gatewayUrl').addEventListener('change', (e) => {
             localStorage.setItem('gatewayUrl', e.target.value);
         });
 
+        document.getElementById('apiKey').addEventListener('change', (e) => {
+            localStorage.setItem('apiKey', e.target.value);
+        });
+
         async function testEndpoint(endpoint) {
             const gatewayUrl = document.getElementById('gatewayUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
             const responseDiv = document.getElementById('response');
 
             if (!gatewayUrl) {
                 responseDiv.innerHTML = '<span class="error">❌ エラー: API Gateway URLを入力してください</span>';
+                return;
+            }
+
+            if (!apiKey) {
+                responseDiv.innerHTML = '<span class="error">❌ エラー: API Keyを入力してください</span>';
                 return;
             }
 
@@ -236,12 +259,16 @@
 
             const startTime = performance.now();
 
+            // ヘッダーの準備（APIキーを含む）
+            const headers = {
+                'Accept': 'application/json',
+                'x-api-key': apiKey,
+            };
+
             try {
                 const response = await fetch(url, {
                     method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    },
+                    headers: headers,
                 });
 
                 const endTime = performance.now();
@@ -271,7 +298,9 @@
 
                 if (error.message.includes('Failed to fetch')) {
                     output += `<strong>考えられる原因:</strong>\n`;
-                    output += `- CORS設定が必要な可能性があります\n`;
+                    output += `- リファラー制限: このHTMLをローカルホスト（file://、http://localhost:*）から開いているか確認\n`;
+                    output += `- APIキーが間違っている可能性があります\n`;
+                    output += `- CORS設定を確認してください\n`;
                     output += `- URLが間違っている可能性があります\n`;
                     output += `- ネットワーク接続を確認してください\n`;
                 }

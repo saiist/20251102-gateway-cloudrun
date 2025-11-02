@@ -15,12 +15,31 @@ x-google-backend:
 
 paths:
   /health:
+    options:
+      summary: CORS preflight for health check
+      operationId: healthCheckOptions
+      security: []
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+      x-google-backend:
+        address: YOUR_CLOUD_RUN_URL
     get:
       summary: Health check endpoint
       operationId: healthCheck
       responses:
         '200':
           description: Service is healthy
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
           schema:
             type: object
             properties:
@@ -30,12 +49,31 @@ paths:
                 type: string
 
   /api/hello:
+    options:
+      summary: CORS preflight for hello
+      operationId: helloOptions
+      security: []
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+      x-google-backend:
+        address: YOUR_CLOUD_RUN_URL
     get:
       summary: Hello endpoint
       operationId: hello
       responses:
         '200':
           description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
           schema:
             type: object
             properties:
@@ -45,12 +83,31 @@ paths:
                 type: object
 
   /api/items:
+    options:
+      summary: CORS preflight for items
+      operationId: getItemsOptions
+      security: []
+      responses:
+        '200':
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+      x-google-backend:
+        address: YOUR_CLOUD_RUN_URL
     get:
       summary: Get items
       operationId: getItems
       responses:
         '200':
           description: Items retrieved successfully
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
           schema:
             type: object
             properties:
@@ -74,6 +131,6 @@ securityDefinitions:
     name: x-api-key
     in: header
 
-# すべてのエンドポイントにAPI Keyを要求する場合はコメントを解除
-# security:
-#   - api_key: []
+# すべてのエンドポイントにAPI Keyを要求（リファラー制限付き）
+security:
+  - api_key: []
