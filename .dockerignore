@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Docker
+Dockerfile
+.dockerignore
+
+# CI/CD
+.github
+
+# IDE
+.vscode
+.idea
+
+# Build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test files
+*_test.go
+
+# Vendor
+vendor/
+
+# Environment files
+.env
+.env.local
+
+# Deployment scripts
+deploy.sh
+cloudbuild.yaml

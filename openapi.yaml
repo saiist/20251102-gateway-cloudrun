@@ -1,0 +1,79 @@
+swagger: '2.0'
+info:
+  title: API Server
+  description: Cloud Run API Server with API Gateway
+  version: 1.0.0
+host: YOUR_GATEWAY_HOST
+schemes:
+  - https
+produces:
+  - application/json
+
+x-google-backend:
+  address: YOUR_CLOUD_RUN_URL
+  protocol: h2
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+
+  /api/hello:
+    get:
+      summary: Hello endpoint
+      operationId: hello
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data:
+                type: object
+
+  /api/items:
+    get:
+      summary: Get items
+      operationId: getItems
+      responses:
+        '200':
+          description: Items retrieved successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    description:
+                      type: string
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: x-api-key
+    in: header
+
+# すべてのエンドポイントにAPI Keyを要求する場合はコメントを解除
+# security:
+#   - api_key: []
