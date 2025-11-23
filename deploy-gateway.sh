@@ -9,8 +9,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # 設定変数
-PROJECT_ID="${GCP_PROJECT_ID:-your-project-id}"
-REGION="${GCP_REGION:-asia-northeast1}"
+PROJECT_ID="genai-learning-2025"
+REGION="asia-northeast1"
 SERVICE_NAME="api-server"
 GATEWAY_NAME="api-gateway"
 API_ID="api-server-api"

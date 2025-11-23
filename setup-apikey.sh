@@ -10,8 +10,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 設定変数
-PROJECT_ID="${GCP_PROJECT_ID:-your-project-id}"
-REGION="${GCP_REGION:-asia-northeast1}"
+PROJECT_ID="genai-learning-2025"
+REGION="asia-northeast1"
 API_ID="api-server-api"
 API_KEY_NAME="api-server-key"
 
@@ -33,8 +33,9 @@ gcloud config set project ${PROJECT_ID}
 
 # デフォルトのリファラー（ローカルホスト）
 DEFAULT_REFERRERS=(
-    "http://localhost:*"
-    "http://127.0.0.1:*"
+    "http://localhost"
+    "http://localhost:5500"
+    "http://127.0.0.1"
     "file://*"
 )
 
@@ -104,8 +105,9 @@ referrers_str=$(IFS=,; echo "${referrers[*]}")
 # API Keyの作成
 gcloud services api-keys create \
     --display-name="${API_KEY_NAME}" \
-    --allowed-referrers="${referrers_str}" \
-    --api-target=service=${API_ID}.apigateway.${PROJECT_ID}.cloud.goog
+    --allowed-referrers="${referrers_str}"
+    # --allowed-referrers="${referrers_str}" \
+    # --api-target=service=${API_ID}.apigateway.${PROJECT_ID}.cloud.goog
 
 # 少し待機（APIキーの作成完了を待つ）
 echo -e "${YELLOW}APIキーの作成を待機中...${NC}"
