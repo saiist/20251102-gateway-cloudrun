@@ -182,7 +182,7 @@
             </div>
             <div class="input-group">
                 <label for="apiKey">API Key (x-api-key)</label>
-                <input type="text" id="apiKey" value="AIzaSyCY8MMc5c30fF8Ax5suM1rfkeAA5iw8Ijg">
+                <input type="text" id="apiKey" value="AIzaSyCj0Y-FbXJMimMhh07V64J8EEPg_SKnF2k">
             </div>
         </div>
 
@@ -225,7 +225,7 @@
     <script>
         // デフォルト値
         const DEFAULT_GATEWAY_URL = 'api-gateway-dh1fxfxf.an.gateway.dev';
-        const DEFAULT_API_KEY = 'AIzaSyCY8MMc5c30fF8Ax5suM1rfkeAA5iw8Ijg';
+        const DEFAULT_API_KEY = 'AIzaSyCj0Y-FbXJMimMhh07V64J8EEPg_SKnF2k';
 
         // LocalStorageからURLとAPIキーを復元（なければデフォルト値を使用）
         window.addEventListener('DOMContentLoaded', () => {
@@ -270,14 +270,14 @@
 
             responseDiv.innerHTML = `<span class="loading">⏳ reCAPTCHA検証中...</span>`;
 
-            // reCAPTCHAトークンの取得
-            let recaptchaToken;
-            try {
-                recaptchaToken = await grecaptcha.execute('6LdjF_8rAAAAAB8GOKLPslNY6xVyPiqjdk6kY2sg', {action: 'api_call'});
-            } catch (error) {
-                responseDiv.innerHTML = `<span class="error">❌ reCAPTCHAエラー: ${error.message}</span>`;
-                return;
-            }
+            // // reCAPTCHAトークンの取得
+            // let recaptchaToken;
+            // try {
+            //     recaptchaToken = await grecaptcha.execute('6LcliBUsAAAAAB5dr1cA_iIZOXHU_wFvMYH7qSop', {action: 'api_call'});
+            // } catch (error) {
+            //     responseDiv.innerHTML = `<span class="error">❌ reCAPTCHAエラー: ${error.message}</span>`;
+            //     return;
+            // }
 
             responseDiv.innerHTML = `<span class="loading">⏳ リクエスト中: ${endpoint}</span>`;
 
@@ -287,7 +287,7 @@
             const headers = {
                 'Accept': 'application/json',
                 'x-api-key': apiKey,
-                'x-recaptcha-token': recaptchaToken,
+                // 'x-recaptcha-token': recaptchaToken,
             };
 
             try {

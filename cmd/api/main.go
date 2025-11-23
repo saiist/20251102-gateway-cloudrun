@@ -24,7 +24,8 @@ func main() {
 	mux.HandleFunc("/api/items", handlers.GetItemsHandler)
 
 	// ミドルウェアチェーン: CORS -> reCAPTCHA -> Logger -> mux
-	handler := middleware.CORS(middleware.RecaptchaVerify(middleware.Logger(mux)))
+	// handler := middleware.CORS(middleware.RecaptchaVerify(middleware.Logger(mux)))
+	handler := middleware.CORS(middleware.Logger(mux))
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,

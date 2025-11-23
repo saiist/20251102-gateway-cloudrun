@@ -46,7 +46,7 @@ gcloud run deploy ${SERVICE_NAME} \
     --memory 512Mi \
     --cpu 1 \
     --port 8080 \
-    --set-env-vars RECAPTCHA_SECRET_KEY=6LdjF_8rAAAAAP_GNaooFnMWdvpCkdyIcTtnNfv7
+    --set-env-vars RECAPTCHA_SECRET_KEY=6LcliBUsAAAAAAKUun3O7vvdrPUcc_PZfSJqdK2j
 
 # サービスURLの取得
 SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} \
