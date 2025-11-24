@@ -9,16 +9,42 @@ schemes:
 produces:
   - application/json
 
+# ==========================================
+# バックエンド設定 (全体共通)
+# ==========================================
+# 各パスで個別に指定しない限り、全てここに転送される
 x-google-backend:
   address: YOUR_CLOUD_RUN_URL
-  protocol: h2
+  protocol: h2 # Cloud Run は h2 (HTTP/2) 推奨
+
+# ==========================================
+# クォータ(制限)の設定定義
+# ==========================================
+x-google-management:
+  metrics:
+    # 制限に使用するカウンター(指標)を定義
+    - name: "my-api-requests-limit"
+      displayName: "API Request Limit"
+      valueType: INT64
+      metricKind: DELTA
+  quota:
+    limits:
+      # 具体的な制限ルールを定義
+      - name: "limit-per-project"
+        metric: "my-api-requests-limit"
+        unit: "1/min/{project}" # プロジェクト(APIキー)単位で、1分間あたりの制限
+        values:
+          STANDARD: 5000 # 1分間に5000回までのリクエストを許可
 
 paths:
+  # ----------------------------------------
+  # ヘルスチェック (認証なし)
+  # ----------------------------------------
   /health:
     options:
       summary: CORS preflight for health check
       operationId: healthCheckOptions
-      security: []
+      security: [] # CORSは常に認証なし
       responses:
         '200':
           description: CORS preflight response
@@ -42,12 +68,10 @@ paths:
               type: string
           schema:
             type: object
-            properties:
-              status:
-                type: string
-              message:
-                type: string
 
+  # ----------------------------------------
+  # 一般API (認証あり)
+  # ----------------------------------------
   /api/hello:
     options:
       summary: CORS preflight for hello
@@ -76,11 +100,6 @@ paths:
               type: string
           schema:
             type: object
-            properties:
-              message:
-                type: string
-              data:
-                type: object
 
   /api/items:
     options:
@@ -102,6 +121,10 @@ paths:
     get:
       summary: Get items
       operationId: getItems
+      # このAPIは課金対象なのでカウントを進める
+      x-google-quota:
+        metricCosts:
+          "my-api-requests-limit": 1
       responses:
         '200':
           description: Items retrieved successfully
@@ -110,27 +133,16 @@ paths:
               type: string
           schema:
             type: object
-            properties:
-              message:
-                type: string
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: string
-                    description:
-                      type: string
 
+# ==========================================
+# セキュリティ定義
+# ==========================================
 securityDefinitions:
   api_key:
     type: apiKey
     name: x-api-key
     in: header
 
-# すべてのエンドポイントにAPI Keyを要求（リファラー制限付き）
+# デフォルト設定: 特に指定がないパスは全てAPIキーを必須とする
 security:
   - api_key: []
